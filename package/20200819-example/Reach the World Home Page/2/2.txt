@@ -1,0 +1,4 @@
+1. DOMContentLoaded value: 5 s
+2. Ip address: 10.10.10.10
+3. Test Location: Jiaxing
+4. Computer: Windows 10 Pro connected with wifi, 100M bandwidth provided by China Mobile(CMCC) 
