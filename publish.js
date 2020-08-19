@@ -1,38 +1,44 @@
 const http = require("http");
+const fs = require("fs");
 const querystring = require("querystring");
 
-const postData = querystring.stringify({
-  content: "Hello World!",
-});
-const options = {
-  host: "127.0.0.1",
-  port: 8081,
-  path: "/?filename=x.html",
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-    "Content-Length": Buffer.byteLength(postData),
-  },
-};
+let filename = "./m8.jpg";
+fs.stat(filename, (error, stat) => {
+  console.log(stat.size);
+  const options = {
+    host: "127.0.0.1",
+    port: 8081,
+    path: "/?filename=" + filename,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "Content-Length": stat.size,
+    },
+  };
 
-const req = http.request(options, (res) => {
-  console.log(`STATUS: ${res.statusCode}`);
-  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-  /*
-  res.setEncoding("utf8");
-  res.on("data", (chunk) => {
-    console.log(`BODY: ${chunk}`);
+  const req = http.request(options, (res) => {
+    console.log(`STATUS: ${res.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+    /*
+    res.setEncoding("utf8");
+    res.on("data", (chunk) => {
+      console.log(`BODY: ${chunk}`);
+    });
+    res.on("end", () => {
+      console.log("No more data in response.");
+    });
+    */
   });
-  res.on("end", () => {
-    console.log("No more data in response.");
+
+  req.on("error", (e) => {
+    console.error(`problem with request: ${e.message}`);
   });
-  */
-});
 
-req.on("error", (e) => {
-  console.error(`problem with request: ${e.message}`);
-});
+  const readStream = fs.createReadStream("./m8.jpg");
 
-// Write data to request body
-req.write(postData);
-req.end();
+  // Write data to request body
+  readStream.pipe(req);
+  readStream.on("end", () => {
+    req.end();
+  });
+});
