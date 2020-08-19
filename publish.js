@@ -25,7 +25,7 @@ fs.stat(filename, (error, stat) => {
     console.error(`problem with request: ${e.message}`);
   });
 
-  const readStream = fs.createReadStream("./m8.jpg");
+  const readStream = fs.createReadStream(filename);
 
   readStream.pipe(req);
   readStream.on("end", () => {
